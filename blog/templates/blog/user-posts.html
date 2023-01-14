@@ -1,0 +1,16 @@
+{% extends "blog/base.html" %}
+{% block content %}
+
+<h1 class='mb-3'>Posts by {{ view.kwargs.username|title }} ({{ page_obj.paginator.count }})</h1>
+
+<div class="row infinite-container">
+  {% for post in posts %}
+    {% include "blog/includes/article-posts.html" %}
+  {% endfor %}
+
+  {% include "blog/includes/paginate.html" %}
+</div>
+
+
+
+{% endblock content %}

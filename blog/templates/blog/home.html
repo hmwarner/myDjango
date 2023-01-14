@@ -1,0 +1,200 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<head>
+  <title>{{ title }}</title>
+  <link rel="home" type="application/rss+xml" href="{{ request.build_absolute_uri }}feed" />
+  <link rel="icon" href="{% static 'blog/img/sys_ico/overview.ico' %}">
+</head>
+
+<style>
+  /*********
+  Slideshow
+  *********/
+
+  .slideshow-container {
+    /*display:                 flex;
+    display:                 -webkit-flex;
+    flex-wrap:               wrap;
+    -webkit-flex-wrap:       wrap;
+  /*  justify-content:         center;
+    -webkit-justify-content: center; */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 4%;
+    width: 80%;
+    /* width: 95%; */
+    height: auto;
+    position: relative;
+    cursor: pointer;
+    box-sizing: border-box;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .slideshow-container img {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 3px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  /*
+  @media screen and (max-width: 1000px) {
+    .slideshow-container {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
+    }
+  }
+  */
+  .mySlides {
+     display: none;
+  }
+  .prevSlide, .nextSlide {
+   cursor: pointer;
+   position: absolute;
+   top: 50%;
+   width: auto;
+   margin-top: -22px;
+   padding: 16px;
+   color: white;
+   font-weight: bold;
+   font-size: 18px;
+   transition: 0.6s ease;
+   border-radius: 0 3px 3px 0;
+   -webkit-user-drag: none;
+   -khtml-user-drag: none;
+   -moz-user-drag: none;
+   -ms-user-drag: none;
+   user-drag: none;
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+  }
+  .nextSlide {
+   right: 0;
+   border-radius: 3px 0 0 3px;
+  }
+  .prevSlide {
+   left: 0;
+   border-radius: 0 3px 3px 0;
+  }
+  .prevSlide:hover, .nextSlide:hover {
+   background-color: rgba(0,0,0,0.8);
+  }
+  .text {
+   color: #f2f2f2;
+   font-size: 15px;
+   padding: 8px 12px;
+   position: absolute;
+   bottom: 50px;
+   width: 100%;
+   text-align: center;
+  }
+  .numbertext {
+   color: #f2f2f2;
+   font-size: 12px;
+   padding: 8px 12px;
+   position: absolute;
+   top: 0;
+  }
+  .fade-slide {
+   -webkit-animation-name: fade-slide;
+   -webkit-animation-duration: 4s;
+   animation-name: fade-slide;
+   animation-duration: 4s;
+  }
+  @-webkit-keyframes fade-slide {
+   from {opacity: .4}
+   to {opacity: 1}
+  }
+  @keyframes fade-slide {
+   from {opacity: .4}
+   to {opacity: 1}
+  }
+
+</style>
+
+<section id=''>
+    <p id='panelStatus'></p>
+    <div class="slideshow-container">
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}1.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}2.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}3.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}4.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}5.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}6.jpg" style="width:100%"></a></div>
+      <div class="mySlides fade-slide"><a href="#"><img src="{{ MEDIA_URL }}7.jpg" style="width:100%"></a></div>
+      <div class="prevSlide" onclick="plusSlides(-1)">&#10094;</div>
+      <div class="nextSlide" onclick="plusSlides(1)">&#10095;</div>
+        <br>
+    </div>
+</section>
+
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function showSlides(n) {
+  var i;
+  var x = document.getElementsByClassName( "mySlides ");
+  var dots = document.getElementsByClassName( "demo ");
+  if (n > x.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display =  "none ";
+  }
+  for (i = 0; i < dots.length; i++) {
+     dots[i].className = dots[i].className.replace( " w3-red ",  " ");
+  }
+  x[slideIndex-1].style.display =  "block ";
+  dots[slideIndex-1].className +=  " w3-red ";
+}
+
+function slideShow() {
+  var myIndex = 0;
+  carousel();
+
+  function carousel() {
+      var i;
+      var x = document.getElementsByClassName( "mySlides ");
+      for (i = 0; i < x.length; i++) {
+         x[i].style.display =  "none ";
+      }
+      myIndex++;
+      if (myIndex > x.length) {myIndex = 1}
+      x[myIndex-1].style.display =  "block ";
+      setTimeout(carousel, 20000);
+  }
+}
+</script>
+
+{% endblock content %}

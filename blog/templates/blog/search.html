@@ -1,0 +1,26 @@
+{% extends "blog/base.html" %}
+{% block content %}
+
+<div>
+  <h3>Search Query Results: ({{ object_list.count }})</h3>
+  {% if object_list %}
+    <div class="row infinite-container">
+      {% for post in object_list %}
+
+      {% include "blog/includes/article-posts.html" %}
+
+      {% endfor %}
+
+      {% include "blog/includes/paginate.html" %}
+    </div>
+    {% else %}
+    <div>
+      <p>No search results</p>
+      <p class=''>We're sorry, but the requested search has come up empty for <i>"{{ request.GET.q }}"</i> </p>
+      <p><a href="{% url 'blog-home' %}">Return to the Home Page</a></p>
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

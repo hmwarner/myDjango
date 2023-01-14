@@ -1,0 +1,7 @@
+  {% for link in social %}
+      <a class='icon icon-btn {{ link.link_name|lower }}' href='{{ link.link_url }}' target='_blank'>
+        <img class='svg svg-social' src="static/blog/svg/{{ link.link_name|lower }}.svg" alt="">
+        <span></span><br />
+      </a>
+  {% endfor %}
+ 

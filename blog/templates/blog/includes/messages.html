@@ -1,0 +1,51 @@
+
+{% if messages %}
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div class='alert alert-success'>
+      <audio id="alertSound" autoplay>
+        <source src="{{ MEDIA_URL }}mp3/success.mp3" type="audio/mpeg">
+      </audio>
+      <button type='button' class='close' data-dismiss='alert' aria-label='close'>
+        <span style="color:#000;" aria-hidden='true'>&times;</span>
+      </button>
+      {{ message }}
+    </div>
+    {% elif message.tags == 'info' %}
+    <div class='alert alert-info'>
+      <audio id="alertSound" autoplay>
+        <source src="{{ MEDIA_URL }}mp3/success.mp3" type="audio/mpeg">
+      </audio>
+      <button type='button' class='close' data-dismiss='alert' aria-label='close'>
+        <span style="color:#000;" aria-hidden='true'>&times;</span>
+      </button>
+      {{ message }}
+    </div>
+    {% elif message.tags == 'warning' %}
+    <div class='alert alert-warning'>
+      <audio id="alertSound" autoplay>
+        <source src="{{ MEDIA_URL }}mp3/alert.mp3" type="audio/mpeg">
+      </audio>
+      <button type='button' class='close' data-dismiss='alert' aria-label='close'>
+        <span style="color:#000;" aria-hidden='true'>&times;</span>
+      </button>
+      {{ message }}
+    </div>
+    {% elif message.tags == 'error' %}
+    <div class='alert alert-danger'>
+      <audio id="alertSound" autoplay>
+        <source src="{{ MEDIA_URL }}mp3/error.mp3" type="audio/mpeg">
+      </audio>
+      <button type='button' class='close' data-dismiss='alert' aria-label='close'>
+        <span style="color:#000;" aria-hidden='true'>&times;</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<script type="text/javascript">
+  var audio = document.getElementById("alertSound");
+  audio.volume = 0.3;
+</script>

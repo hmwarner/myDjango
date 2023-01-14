@@ -1,0 +1,42 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<script type="text/javascript" src="{% static '/ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static '/ckeditor/ckeditor/ckeditor.js' %}"></script>
+<!--
+<style>
+  #editor {
+    height: 500px;
+    border: 1px solid #CED4DA;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+  #editor:focus {
+    border: 2px solid #80BDFF;
+    border-radius: .25rem;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+  }
+</style>
+-->
+  <div class="content-section">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Add New Post</legend>
+
+              {{ form.as_p }}
+              {{ form.media }}
+
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Publish</button>
+          </div>
+      </form>
+
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+{% endblock content %}

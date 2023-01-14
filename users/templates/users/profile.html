@@ -1,0 +1,82 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<div class="content-section">
+  <div class="content-section">
+
+    <div class="media position-relative">
+      <div class="avatar-container media-body clearfix">
+        <div class="avatar-wrapper float-left">
+          <img id="profile-upload" class="profile-pic rounded-circle img-thumbnail" src="{{ user.profile.image.url }}">
+          <div class="upload-button">
+            <svg class="fa-duotone fa-circle-arrow-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM385 215c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V392c0 13.3-10.7 24-24 24s-24-10.7-24-24V177.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 103c9.4-9.4 24.6-9.4 33.9 0L385 215z"/>
+            </svg>
+          </div>
+        </div>
+        <div class='avatar-title float-right'>
+          <h3 class="">
+            {% if user.first_name and user.last_name %}
+            {{ user.get_full_name|title }}
+            {% else %}
+            {{ user.username|title }}
+            {% endif %}
+            <!--<svg class="user-status" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512z"/>
+            </svg>-->
+          </h3>
+          <p class="text-muted">{{ user.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+              Edit Account
+              </legend>
+              {{ u_form|crispy }}
+        </fieldset>
+        <fieldset class="form-group">
+          <legend class="border-bottom mb-4">
+            Edit Profile
+            </legend>
+            {{ p_form.non_field_errors }}
+            <div class="fieldWrapper">
+              {{ p_form.date_of_birth.errors }}
+              <label for="{{ p_form.date_of_birth.id_for_label }}">Date of Birth</label><br />
+              {{ p_form.date_of_birth }}
+              <script>
+                $(function() {
+                  $("#id_date_of_birth").datepicker({
+                    format: 'yyyy-mm-dd',
+                    language: 'en-US',
+                    autoHide: 'true',
+                    endDate: 'today',
+                    startView: '2'
+                  });
+                });
+              </script>
+            </div>
+            <div class="fieldWrapper">
+              {{ p_form.about_me.errors }}
+              <label for="{{ p_form.about_me.id_for_label }}">Description</label><br />
+              {{ p_form.about_me }}
+            </div>
+            <div class="fieldWrapper d-none">
+              {{ p_form.image.errors }}
+              <label for="{{ p_form.image.id_for_label }}"></label><br />
+              {{ p_form.image }}
+            </div>
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Update</button>
+          </div>
+      </form>
+  </div>
+</div>
+
+{% endblock content %}

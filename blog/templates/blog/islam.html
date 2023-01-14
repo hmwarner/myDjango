@@ -1,0 +1,17 @@
+{% extends "blog/base.html" %}
+{% load static %}
+{% block content %}
+
+<head>
+  <link rel="icon" href="{% static 'blog/img/sys_ico/islam.ico' %}">
+</head>
+
+<img src="{{ MEDIA_URL }}bismillah.png" alt="" width="66%">
+
+<div class="container">
+  <blockquote cite="http://www.islamicity.org">
+    <p>Islam means to achieve peace – peace with God, peace within oneself, and peace with the creations of God – through wholly submitting oneself to God and accepting His guidance.</p>
+    <footer>&mdash; www.islamicity.org</footer>
+  </blockquote>
+</div>
+{% endblock content %}

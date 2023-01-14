@@ -1,0 +1,465 @@
+#accounting
+
+<head>
+  <link rel="icon" href="{% static 'accounting/img/sys_ico/budget.ico' %}">
+</head>
+
+<div class="content-section">
+  <form method="POST">
+      {% csrf_token %}
+      <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Add New Debt</legend>
+
+            {{ d_form|crispy }}
+
+      </fieldset>
+      <div class="form-group">
+        <button class="btn btn-outline-info" type="submit">Add</button>
+        </div>
+    </form>
+#accounting models
+    from django.db import models
+    from django.utils import timezone
+
+    CYCLE_CHOICES = (
+        ("WEEKLY", "Weekly"),
+        ("MONTHLY", "Monthly"),
+        ("YEARLY", "Yearly"),
+    )
+
+    class Expense(models.Model):
+        expense_name = models.CharField(max_length=100)
+        cycle = models.CharField(max_length=9,
+                      choices=CYCLE_CHOICES,
+                      default="WEEKLY")
+        #total = models.DecimalField(max_digits=20, decimal_places=2)
+        #cycle = models.TextChoices('Weekly','Monthly', 'Yearly')
+        #transaction_date = models.DateField(auto_now=False)
+
+        def __str__(self):
+            return self.expense_name.capitalize()
+
+    class Debt(models.Model):
+        debt_name = models.CharField(max_length=100)
+        owed = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+        amount_paid = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+        debt_created = models.DateTimeField(default=timezone.now,verbose_name='Debt Creation Date',blank=True,editable=False)
+        #due_date = models.DateField(auto_now=False, required=False)
+        #fullfilled = models.BooleanField()
+
+        def __str__(self):
+            return self.debt_name.capitalize()
+
+#accounting forms
+
+from django import forms
+from .models import Debt
+from ckeditor.widgets import CKEditorWidget
+
+class NewDebtForm(forms.ModelForm):
+
+    class Meta:
+        model = Debt
+        fields = [
+            'debt_name',
+            'owed',
+            'amount_paid'
+            ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['debt_name'] = forms.CharField(
+                                required=False,
+                                label='Debt Name',
+                                error_messages={'required': 'this field is required'},
+                                )
+
+        self.fields['owed'] = forms.DecimalField(
+                                required=False,
+                                label='Owed Amount',
+                                )
+        self.fields['amount_paid'] = forms.DecimalField(
+                                required=False,
+                                label='Amount Paid',
+                                )
+
+#accounting views
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib import messages
+from .forms import NewDebtForm
+
+def home(request):
+    if request.method == 'POST':
+        d_form = NewDebtForm(request.POST)
+        if d_form.is_valid():
+            d_form.save()
+            messages.success(request, f'You have added a new debt.')
+            return redirect("accounting")
+    else:
+        d_form = NewDebtForm()
+
+    context = {
+        'd_form': d_form,
+        'title': 'Budget',
+    }
+    return render(request, 'accounting/base.html', context)
+
+    """d_form = NewDebtForm(request.POST,
+                                instance=request.user)
+
+    context = {
+        'd_form': d_form,
+    }
+
+    return render(request, 'accounting/base.html', context)"""
+
+
+
+
+#diary
+
+    <head>
+      <link rel="stylesheet" type='text/css' href="{% static 'diary/css/style.css' %}">
+      <link rel="icon" href="{% static 'diary/img/sys_ico/memoir.ico' %}">
+    </head>
+
+    <div class="content-section">
+
+      <div class="content-section">
+
+      <div class="content-section">
+        <form name='goal-form' method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Add New Goal</legend>
+
+                  {{ goal_form|crispy }}
+
+            </fieldset>
+            <div class="form-group">
+              <button class="btn btn-outline-info" name='goal_submit' type="submit">Add Goal</button>
+              </div>
+          </form>
+        </div>
+
+      <div class="content-section">
+        <form name='reminder-form' method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Add New Reminder</legend>
+
+                  {{ reminder_form|crispy }}
+
+            </fieldset>
+            <div class="form-group">
+              <button class="btn btn-outline-info" name='reminder_submit' type="submit">Add Reminder</button>
+              </div>
+          </form>
+        </div>
+
+    </div>
+        <!-- Webcam Module -->
+        <!--<div class="video-wrap">
+          <video id="video" playsinline autoplay></video>
+        </div>
+
+        <div class="controller">
+            <button id="snap">Capture</button>
+        </div>
+
+        <canvas id="canvas" width="640" height="480"></canvas>
+
+
+        <script src="{% static 'diary/js/func.js' %}"></script>
+        -->
+
+#diary models
+
+from django.db import models
+from django.utils import timezone
+from multiselectfield import MultiSelectField
+
+REPEAT_CHOICES = (
+    ("DAILY", "Daily"),
+    ("WEEKDAYS", "Weekdays"),
+    ("WEEKLY", "Weekly"),
+    ("MONTHLY", "Monthly"),
+    ("YEARLY", "Yearly"),
+    ("CUSTOM", "Custom"),
+)
+
+GOAL_CATEGORIES = (
+    ('BUSINESS', 'Business'),
+    ('CAREER', 'Career'),
+    ('EDUCATION', 'Education'),
+    ('LONG TERM', 'Long Term'),
+    ('OTHER', 'Other'),
+    ('SHORT TERM', 'Short Term'),
+)
+
+class Goal(models.Model):
+    goal_name = models.CharField(max_length=100)
+    site_category = MultiSelectField(max_length=50,choices=GOAL_CATEGORIES,default=None,blank=True,verbose_name='Category')
+    deadline = models.DateField(auto_now=False,blank=True)
+    timestamp = models.DateTimeField(default=timezone.now,verbose_name='Goal Creation Date')
+
+    def __str__(self):
+        return self.goal_name.capitalize()
+
+class Reminder(models.Model):
+    reminder_name = models.CharField(max_length=100)
+    alert = models.DateTimeField(auto_now=False,blank=True)
+    deadline = models.DateField(auto_now=False,blank=True)
+    repeat = models.BooleanField(default=False,blank=True)
+    iteration = models.CharField(max_length=25,
+                  choices=REPEAT_CHOICES,
+                  default="DAILY",
+                  blank=True,)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.reminder_name.capitalize()
+
+#diary views
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib import messages
+from .forms import GoalForm, ReminderForm
+from django.views import View
+from django import forms
+
+def home(request):
+    if request.method == 'POST':
+        goal_form = GoalForm(request.POST)
+        reminder_form = ReminderForm(request.POST)
+        if 'goal_submit' in goal_form.data and goal_form.is_valid():
+            goal_form.save()
+            messages.success(request, f'You have added a new goal.')
+            return redirect("diary-home")
+        elif 'reminder_submit' in reminder_form.data and reminder_form.is_valid():
+            reminder_form.save()
+            messages.success(request, f'You have added a new reminder.')
+            return redirect("diary-home")
+    else:
+        goal_form = GoalForm()
+        reminder_form = ReminderForm()
+
+    context = {
+        'goal_form': goal_form,
+        'reminder_form': reminder_form,
+        'title': 'Memoir',
+    }
+    return render(request, 'diary/home.html', context)
+
+'''
+class home(View):
+    goal_form = GoalForm()
+    routine_form = RoutineForm()
+    template_name = 'diary/home.html'
+    context = {
+        'goal_form': goal_form,
+        'routine_form': routine_form,
+        'title': 'Diary',
+    }
+    def get(self, request, *args, **kwargs):
+        if request.method=='POST' and 'goal_submit' in request.POST:
+            goal_form.save()
+            messages.success(request, f'You have added a new goal.')
+            return redirect("diary-home")
+        if request.method == 'POST' and 'routine_submit' in request.POST:
+            routine_form.save()
+            messages.success(request, f'You have added a new routine.')
+            return redirect("diary-home")
+        return render(request, self.template_name, self.context)
+'''
+
+#diary forms
+
+from django import forms
+from .models import Goal, Reminder
+from ckeditor.widgets import CKEditorWidget
+
+class GoalForm(forms.ModelForm):
+
+    class Meta:
+        model = Goal
+        fields = [
+            'goal_name',
+            'deadline',
+            ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        self.fields['goal_name'] = forms.CharField(
+                                required=False,
+                                label='Goal name',
+                                error_messages={'required': 'This field is required'},
+                                )
+
+        self.fields['deadline'] = forms.DateTimeField(
+                                required=False,
+                                label='Due Date',
+                                input_formats=['%d/%m/%Y %H:%M'],
+                                widget=forms.TextInput(attrs={'placeholder':'MM/DD/YY'})
+                                )
+
+class ReminderForm(forms.ModelForm):
+
+    class Meta:
+        model = Reminder
+        fields = [
+            'reminder_name',
+            'alert',
+            'deadline',
+            'iteration',
+        ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        REPEAT_CHOICES = (
+            ("DAILY", "Daily"),
+            ("WEEKDAYS", "Weekdays"),
+            ("WEEKLY", "Weekly"),
+            ("MONTHLY", "Monthly"),
+            ("YEARLY", "Yearly"),
+            ("CUSTOM", "Custom"),
+        )
+
+        self.fields['reminder_name'] = forms.CharField(
+                                label='Reminder Name',
+                                )
+
+        self.fields['alert'] = forms.DateTimeField(
+                                required=False,
+                                label='Reminder',
+                                input_formats=['%m/%d/%y %H:%M'],
+                                widget=forms.TextInput(attrs={'placeholder':'MM/DD/YY HH/MM'})
+                                )
+
+        self.fields['deadline'] = forms.DateField(
+                                required=False,
+                                label='Due Date',
+                                input_formats=['%m/%d/%y'],
+                                #widget=forms.TextInput(attrs={'placeholder':'MM/DD/YY'})
+                                )
+
+        self.fields['iteration'] = forms.CharField(
+                                required=False,
+                                label='Frequency',
+                                widget=forms.Select(choices=REPEAT_CHOICES),
+                                )
+
+
+#news models
+
+"""from datetime import datetime
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save"""
+from django.db import models
+
+#User = get_user_model()
+
+class Headline(models.Model):
+    title = models.CharField(max_length=120)
+    teaser = models.TextField()
+    img = models.ImageField()
+    #url = models.TextField()
+
+    def __str__(self):
+        return self.title
+"""
+class UserProfile(models.Model):
+	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	last_scrape = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return "{}-{}".format(self.user, self.last_scrape)
+
+
+def post_user_signup_receiver(sender, instance, **kwargs):
+	userprofile, created = UserProfile.objects.get_or_create(user=instance)
+
+post_save.connect(post_user_signup_receiver, sender=User)
+"""
+
+#news views
+
+from django.shortcuts import render, redirect
+#import math
+import requests
+requests.packages.urllib3.disable_warnings()
+
+from bs4 import BeautifulSoup
+#from datetime import timedelta, timezone, datetime
+import os
+import shutil
+
+#from .models import Headline
+
+def scrape():
+    """
+    user_p = UserProfile.objects.filter(user=request.user).first()
+    if user_p is not None:
+        user_p.last_scrape = datetime.now(timezone.utc)
+        user_p.save()
+"""
+    session = requests.Session()
+    session.headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.109 Safari/537.36"}
+    url = 'http://colorhexa.com'
+
+    content = session.get(url, verify=False).content
+
+    soup = BeautifulSoup(content, "html.parser")
+
+    posts = soup.findAll('head', {'class':''}) # returns a list
+    for i in posts:
+        #category = i.find_all('a',{'class':''})[1].text
+        if not i.select('[href^=https]'):
+            icon = i.find('link', {'rel':'shortcut icon'})['href']
+            print(url + icon)
+        else:
+            icon = i.find('link', {'rel':'shortcut icon'})['href']
+            print(icon)
+        title = i.find('title',{'class':''})
+        title = title.get_text(strip=True)
+        print(title)
+
+
+"""
+        media_root = '/Users/H/dev/myDjango/media/news'
+        if not img.startswith(("data:image", "javascript")):
+            local_filename = img.split('/')[-1].split("?")[0]
+            r = session.get(img, stream=True, verify=False)
+            f = open(local_filename, 'wb')
+            for chunk in r.iter_content(chunk_size=1024):
+            	f.write(chunk)
+
+            current_image_absolute_path = os.path.abspath(local_filename)
+            shutil.move(current_image_absolute_path, media_root)
+
+        new_headline = Headline()
+        new_headline.title = title
+        new_headline.teaser = teaser
+        new_headline.img = local_filename
+        new_headline.save()
+
+        return redirect('/news/')
+        """
+
+"""
+    for i in posts:
+        link = i.find_all('h2',{'class':'title'})[1].text
+        title = i.find_all('p',{'class':'teaser'})[1].text
+        #image_source = i.find('img',{'class':'dv4r5q-2'})['data-src']
+        print(link)
+        print(title)
+"""
+
+#news forms
